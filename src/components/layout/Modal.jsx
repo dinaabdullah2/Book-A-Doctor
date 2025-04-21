@@ -5,7 +5,7 @@ export default function Modal({
   onClose,
   children,
   onConfirm,
-  onDecline,
+  disabled,
   confirmText = "Confirm",
   declineText = "Decline"
 }) {
@@ -39,30 +39,27 @@ export default function Modal({
               <span className="sr-only">Close modal</span>
             </button>
           </div>
-     
+
           <div className="px-5 pb-5">{children}</div>
 
 
           <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b">
-            {/* {onConfirm && ( */}
-              <button
-                type="button"
-                onClick={onConfirm}
-                className="text-white bg-[#364153] hover:bg-blue-950 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-              >
-                {confirmText}
-              </button>
-            {/* )} */}
-            {/* {onDecline && ( */}
-              <button
-                type="button"
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={disabled}
+              className="text-white bg-[#364153] hover:bg-blue-950 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >
+              {confirmText}
+            </button>
+            <button
+              type="button"
 
-                onClick={onClose}
-                className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
-              >
-                {declineText}
-              </button>
-            {/* )} */}
+              onClick={onClose}
+              className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
+            >
+              {declineText}
+            </button>
           </div>
         </div>
       </div>

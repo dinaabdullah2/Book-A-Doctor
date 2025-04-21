@@ -1,6 +1,7 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
-import DoctorsList from '../components/DoctorsList/DoctorsList'
+import DoctorsList from '../components/Doctors/DoctorsList'
+
 
 const Home = () => {
   return (

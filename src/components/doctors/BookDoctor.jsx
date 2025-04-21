@@ -1,10 +1,40 @@
 import React, { useState } from "react";
 import Modal from "../layout/modal";
 import DatePicker from "react-datepicker";
+import { useDoctorsStore } from "../../store/doctors.store";
 
 const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
-  const [startDate, setStartDate] = useState(new Date());
-  console.log("Doctor Details", startDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase());
+  const [date, setday] = useState(new Date());
+  const [selectedTime, setSelectedTime] = useState(null);
+  const { bookAppointment, addAppointmentToList } = useDoctorsStore();
+  const handleConfirm = () => {
+    bookAppointment(
+      doctorDetails.id,
+      date.toISOString().split("T")[0],
+      selectedTime
+    );
+    addAppointmentToList(
+      doctorDetails.name,
+      date,
+      formatToAMPM(new Date(selectedTime?.startTime)),
+      formatToAMPM(new Date(selectedTime?.endTime)),
+      doctorDetails.specialty,
+      doctorDetails.location
+    );
+    setIsModalOpen(false);
+    setday(new Date());
+    setSelectedTime(null);
+  };
+  const formatToAMPM = (date) => {
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const period = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${hours}:${minutes < 10 ? "0" + minutes : minutes} ${period}`;
+  };
+
   return (
     <div>
       <button
@@ -17,29 +47,64 @@ const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
       </button>
       <Modal
         isOpen={isModalOpen}
+        disabled={!selectedTime || !date}
         onClose={() => setIsModalOpen(false)}
         title="Terms of Service"
-      // onConfirm={handleConfirm}
-      // onDecline={handleDecline}
+        onConfirm={handleConfirm}
+        // onDecline={handleDecline}
       >
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">{doctorDetails.name}</h3>
-        <p className="mb-4 text-gray-700">{doctorDetails.specialty}</p>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          {doctorDetails.name}
+        </h3>
+        <p className="mb-1 text-gray-700">{doctorDetails.specialty}</p>
         <p className="mb-4 text-gray-700">{doctorDetails.location}</p>
-        <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+        <div className=" flex  md:flex-row flex-col justify-between mb-2">
+          <DatePicker
+            showIcon
+            className="border border-gray-300 rounded-lg p-2 w-full md:w-1/2"
+            minDate={new Date()}
+            inline
+            selected={date}
+            onChange={(date) => setday(date)}
+          />
 
-        <ul className="space-y-4 my-4 ">
-          {doctorDetails?.availabilityTime[startDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()].map((item) => (
-            <li>
-              <input type="radio" id="job-1" name="job" value="job-1" className="hidden peer"  />
-              <label for="job-1" className="inline-flex items-center justify-between w-full p-5 text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer  peer-checked:bg-blue-200 hover:bg-gray-100 ">
-                <div className="block">
-                  {item.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {item.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
-                
-              </label>
-            </li>
-          ))}
-        </ul>
+          <ul className="space-y-2 my-2 md:h-[230px] h-[150px] md:w-1/2 overflow-y-scroll">
+            {doctorDetails?.availabilityTime[
+              date
+                .toLocaleDateString("en-US", { weekday: "long" })
+                .toLowerCase()
+            ]?.map((item, index) => {
+              const timeId = `appointment-${item.id || index}`;
+              return (
+                <li key={index}>
+                  <input
+                    onChange={() => setSelectedTime(item)}
+                    type="radio"
+                    id={timeId}
+                    name="appointment"
+                    value={item.id}
+                    disabled={doctorDetails.bookedDates?.[
+                      date.toISOString().split("T")[0]
+                    ]?.includes(item.id) ?? false}
+                    aria-checked={selectedTime?.id === item.id}
+                    className="hidden peer"
+                    checked={selectedTime?.id === item.id}
+                    readOnly
+                  />
+                  <label
+                    htmlFor={timeId}
+                    className="inline-flex items-center justify-between w-full p-5 text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 peer-checked:bg-blue-200 hover:bg-gray-100"
+                  >
+                    <div className="block">
+                      {formatToAMPM(new Date(item?.startTime))} -
+                      {formatToAMPM(new Date(item?.endTime))}
+                    </div>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </Modal>
     </div>
   );

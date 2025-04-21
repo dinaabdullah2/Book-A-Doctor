@@ -8,9 +8,13 @@ const Navbar = () => {
   return (
     <>
       <nav className="bg-white  border-gray-200">
-        <div className="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between mx-auto p-4">
+        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="/" className="flex items-center  rtl:space-x-reverse">
-            <img src={"/assets/images/logo.png"} className="h-10 " alt="Book Doctor Logo" />
+            <img
+              src={"/assets/images/logo.png"}
+              className="h-10 "
+              alt="Book Doctor Logo"
+            />
             <span className="self-center md:text-2xl text-lg font-semibold whitespace-nowrap text-[#061A3A] ">
               Book Doctor
             </span>
@@ -50,7 +54,7 @@ const Navbar = () => {
                 { title: "Home", link: "/" },
                 { title: "My Appointment", link: "/my-appointment" },
               ].map((item) => (
-                <li className=" ">
+                <li key={item.title} className=" ">
                   <NavLink
                     to={item.link}
                     key={item.title}

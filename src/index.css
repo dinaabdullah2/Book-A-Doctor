@@ -34,9 +34,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 .react-datepicker__input-container input{
-  border: 1px solid #b0bfd2;
+  border: 1px solid #CBCBCB;
   padding: 5px 10px;
-}
-.react-datepicker__month-container {
-  @apply w-full;
+  border-radius: 4px;
 }

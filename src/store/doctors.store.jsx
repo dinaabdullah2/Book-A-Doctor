@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import doctors from "../mockData/DoctorsList";
+import doctors from "../mockData/doctorsList";
 
 export const useDoctorsStore = create(
   persist(

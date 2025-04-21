@@ -49,9 +49,7 @@ const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
         isOpen={isModalOpen}
         disabled={!selectedTime || !date}
         onClose={() => setIsModalOpen(false)}
-        title="Terms of Service"
         onConfirm={handleConfirm}
-        // onDecline={handleDecline}
       >
         <h3 className="text-xl font-semibold text-gray-900 mb-2">
           {doctorDetails.name}
@@ -75,6 +73,17 @@ const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
                 .toLowerCase()
             ]?.map((item, index) => {
               const timeId = `appointment-${item.id || index}`;
+              console.log(
+                doctorDetails.bookedDates?.[
+                  date.toISOString().split("T")[0]
+                ]
+              ,"wewew");
+              const AppointmentId = doctorDetails.bookedDates?.[date.toISOString().split("T")[0]]
+                ? doctorDetails.bookedDates?.[date.toISOString().split("T")[0]].find(
+                    (time) => time.id === item.id
+                  )
+                : null;
+              const isBooked = AppointmentId ? true : false;
               return (
                 <li key={index}>
                   <input
@@ -83,9 +92,7 @@ const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
                     id={timeId}
                     name="appointment"
                     value={item.id}
-                    disabled={doctorDetails.bookedDates?.[
-                      date.toISOString().split("T")[0]
-                    ]?.includes(item.id) ?? false}
+                    disabled={isBooked}
                     aria-checked={selectedTime?.id === item.id}
                     className="hidden peer"
                     checked={selectedTime?.id === item.id}
@@ -93,9 +100,9 @@ const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
                   />
                   <label
                     htmlFor={timeId}
-                    className="inline-flex items-center justify-between w-full p-5 text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 peer-checked:bg-blue-200 hover:bg-gray-100"
+                    className="inline-flex  items-center justify-between w-full p-5 peer-disabled:cursor-not-allowed  peer-disabled:bg-gray-200 peer-disabled:hover:bg-gray-200 peer-disabled:opacity-[.5] text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 peer-checked:bg-blue-200 hover:bg-gray-100"
                   >
-                    <div className="block">
+                    <div className="block peer-disabled:cursor-not-allowed ">
                       {formatToAMPM(new Date(item?.startTime))} -
                       {formatToAMPM(new Date(item?.endTime))}
                     </div>

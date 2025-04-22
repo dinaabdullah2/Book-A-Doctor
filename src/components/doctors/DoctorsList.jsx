@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { useDoctorsStore } from "../../store/doctors.store";
-import { format, setHours, setMinutes } from "date-fns";
+import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import { specialtiesOptions } from "../../mockData/specialtiesOptions";
 import DoctorCard from "./DoctorCard";
@@ -10,26 +10,22 @@ const DoctorsList = () => {
   const doctors = useDoctorsStore((state) => state.doctors);
   const [selectedOption, setSelectedOption] = useState(null);
   const [startDate, setStartDate] = useState(null);
-  const [filteredDoctors, setFilteredDoctors] = useState(doctors);
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
 
   function getFilteredAvailableDoctors(doctors, selectedOption, selectedDate) {
     const dayOfWeek = selectedDate
       ? format(selectedDate, "EEEE").toLowerCase()
       : null;
-    const selectedTime = selectedDate?.getTime();
-
+  
     return doctors.filter((doctor) => {
       const matchesSpecialty = selectedOption
         ? doctor.specialty.toLowerCase() === selectedOption.value.toLowerCase()
         : true;
-
-      const matchesAvailability = selectedDate
-        ? doctor.availabilityTime?.[dayOfWeek]?.some(
-            (slot) => new Date(slot.startTime).getTime() === selectedTime
-          )
-        : true;
-
-      return matchesSpecialty && matchesAvailability;
+  
+      const matchesDay =
+        dayOfWeek && doctor.availabilityTime?.[dayOfWeek]?.length > 0;
+  
+      return matchesSpecialty && (!dayOfWeek || matchesDay);
     });
   }
 
@@ -54,19 +50,23 @@ const DoctorsList = () => {
   };
 
   useEffect(() => {
-    setFilteredDoctors(doctors);
-  }, []);
+    setFilteredDoctors(doctors || []);
+  }, [doctors]);
 
   return (
-    <div className="max-w-screen-xl mx-auto py-7 md:px-0 px-3">
-      <div className=" flex md:flex-row flex-col gap-5  items-center justify-between mb-4">
-        <h2 className="px-7 text-xl font-bold text-gray-800">Doctors List</h2>
+    <div className="max-w-screen-xl mx-auto py-7 ">
+      <div className=" flex md:flex-row flex-col gap-5  items-center justify-between mb-4 px-3">
+        <h2 className=" text-xl font-bold text-gray-800 ">Doctors List</h2>
         <div className="flex md:flex-row flex-wrap justify-end flex-col items-center gap-4 w-full md:w-1/2">
           <Select
+            inputId="specialty-select"
+            aria-label="Specialty selection"
+            aria-labelledby="specialty-select"
+            name="specialty-select"
             value={selectedOption}
             onChange={handleSpecialtyChange}
             options={specialtiesOptions}
-            className=" w-full md:w-1/3"
+            className="w-full md:w-1/3"           
             placeholder="Choose specialty"
           />
 
@@ -74,36 +74,31 @@ const DoctorsList = () => {
             className=" w-full "
             selected={startDate}
             onChange={handleFilter}
-            showTimeSelect
             placeholderText="Select date and time"
             minDate={new Date()}
-            excludeTimes={[
-              setHours(setMinutes(new Date(), 0), 17),
-              setHours(setMinutes(new Date(), 30), 18),
-              setHours(setMinutes(new Date(), 30), 19),
-              setHours(setMinutes(new Date(), 30), 17),
-            ]}
-            dateFormat="MMMM d, yyyy h:mm aa"
+            dateFormat="MMMM d, yyyy"
           />
           {(startDate || selectedOption) && filteredDoctors.length > 0 && (
             <div>
               <button
-                className=" w-full md:w-1/3 "
+                type="button"
+                className="w-full  bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
                 onClick={() => {
                   setFilteredDoctors(doctors);
                   setStartDate(null);
                   setSelectedOption(null);
                 }}
+                aria-label="Reset filters and show all doctors"
               >
-                reset
+                Reset
               </button>
             </div>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-        {filteredDoctors.map((item) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-5 gap-3 p-4">
+        {filteredDoctors && filteredDoctors.map((item) => (
           <DoctorCard item={item} key={item.id} />
         ))}
         {filteredDoctors.length === 0 && (

@@ -34,7 +34,9 @@ const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
     hours = hours ? hours : 12;
     return `${hours}:${minutes < 10 ? "0" + minutes : minutes} ${period}`;
   };
-
+  console.log(
+    doctorDetails,"asa"
+  );
   return (
     <div>
       <button
@@ -65,7 +67,18 @@ const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
             selected={date}
             onChange={(date) => setday(date)}
           />
-
+          {doctorDetails?.availabilityTime[
+            date.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase()
+          ]?.length === 0 && (
+            <div className=" flex  w-full">
+            <p className="text-red-500 m-auto text-center font-semibold">
+              No available time slots for this date.
+            </p>
+            </div>
+          )}
+          {doctorDetails?.availabilityTime[
+            date.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase()
+          ]?.length > 0 && (
           <ul className="space-y-2 my-2 md:h-[230px] h-[150px] md:w-1/2 overflow-y-scroll">
             {doctorDetails?.availabilityTime[
               date
@@ -73,37 +86,45 @@ const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
                 .toLowerCase()
             ]?.map((item, index) => {
               const timeId = `appointment-${item.id || index}`;
-              console.log(
-                doctorDetails.bookedDates?.[
-                  date.toISOString().split("T")[0]
-                ]
-              ,"wewew");
-              const AppointmentId = doctorDetails.bookedDates?.[date.toISOString().split("T")[0]]
-                ? doctorDetails.bookedDates?.[date.toISOString().split("T")[0]].find(
-                    (time) => time.id === item.id
-                  )
+              const AppointmentId = doctorDetails.bookedDates?.[
+                date.toISOString().split("T")[0]
+              ]
+                ? doctorDetails.bookedDates?.[
+                    date.toISOString().split("T")[0]
+                  ].find((time) => time.id === item.id)
                 : null;
               const isBooked = AppointmentId ? true : false;
               return (
                 <li key={index}>
                   <input
-                    onChange={() => setSelectedTime(item)}
                     type="radio"
                     id={timeId}
                     name="appointment"
                     value={item.id}
+                    onChange={() => setSelectedTime(item)}
                     disabled={isBooked}
                     aria-checked={selectedTime?.id === item.id}
-                    className="hidden peer"
                     checked={selectedTime?.id === item.id}
+                    aria-label={`${formatToAMPM(new Date(item?.startTime))} - ${formatToAMPM(new Date(item?.endTime))}`}
+                    className="hidden peer"
                     readOnly
                   />
                   <label
                     htmlFor={timeId}
-                    className="inline-flex  items-center justify-between w-full p-5 peer-disabled:cursor-not-allowed  peer-disabled:bg-gray-200 peer-disabled:hover:bg-gray-200 peer-disabled:opacity-[.5] text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 peer-checked:bg-blue-200 hover:bg-gray-100"
+                    role="radio"
+                    aria-checked={selectedTime?.id === item.id}
+                    aria-disabled={isBooked}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        if (!isBooked) setSelectedTime(item);
+                      }
+                    }}
+                    className="inline-flex items-center justify-between w-full p-5 text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:bg-gray-200 peer-disabled:hover:bg-gray-200 peer-disabled:opacity-[.5] peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 peer-checked:bg-blue-200 hover:bg-gray-100"
                   >
-                    <div className="block peer-disabled:cursor-not-allowed ">
-                      {formatToAMPM(new Date(item?.startTime))} -
+                    <div className="block">
+                      {formatToAMPM(new Date(item?.startTime))} -{" "}
                       {formatToAMPM(new Date(item?.endTime))}
                     </div>
                   </label>
@@ -111,6 +132,7 @@ const BookDoctor = ({ isModalOpen, setIsModalOpen, doctorDetails }) => {
               );
             })}
           </ul>
+          )}
         </div>
       </Modal>
     </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { useDoctorsStore } from "../store/doctors.store";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar/Navbar";
+
 
 const AppoimtmentList = () => {
   const appointmentList = useDoctorsStore((state) => state.appointmentList);

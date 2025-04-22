@@ -1,29 +1,4 @@
 @import "tailwindcss";
-@theme {
-  --animate-slide-down: slide-down 300ms ease-in forwards;
-  --animate-slide-up: slide-up 300ms ease-out forwards;
-  /* @keyframes slide-down {
-    0% {
-      transform: translateY(0%);
-      opacity: 0
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(10%);
-    }
-  }
-  @keyframes slide-up {
-    0% {
-      transform: translateY(0%); 
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-25%);
-       opacity:0
-    }
-  } */
-   
-}
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -37,4 +12,7 @@
   border: 1px solid #CBCBCB;
   padding: 5px 10px;
   border-radius: 4px;
+}
+.react-datepicker-wrapper{
+  @apply max-md:w-full
 }

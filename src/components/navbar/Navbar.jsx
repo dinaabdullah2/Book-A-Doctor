@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { navLinks } from "./navLnks";
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,10 +52,7 @@ const Navbar = () => {
             id="navbar-solid-bg"
           >
             <ul className="flex flex-col font-medium mt-4 rounded-lg  md:space-x-8 ">
-              {[
-                { title: "Home", link: "/" },
-                { title: "My Appointment", link: "/my-appointment" },
-              ].map((item) => (
+              {navLinks.map((item) => (
                 <li key={item.title} className=" ">
                   <NavLink
                     to={item.link}
@@ -68,6 +67,10 @@ ${isActive ? "bg-[#10ABC7] text-white" : ""}`
                     }
                     aria-current="page"
                     role="link"
+                    title={`sm-screen-${item.title}`}
+                    aria-label={item.title} 
+                    aria-describedby={item.title}
+                    aria-pressed="false"    
                   >
                     {item.title}
                   </NavLink>
@@ -78,27 +81,35 @@ ${isActive ? "bg-[#10ABC7] text-white" : ""}`
         </div>
       </nav>
       <nav className=" bg-gray-700  md:block hidden">
-        <div className="max-w-screen-xl px-10 py-3 mx-auto">
+        <div className="max-w-screen-xl px-5 py-3 mx-auto">
           <div className="flex items-center">
             <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm">
-              <li>
-                <NavLink
-                  to="/"
-                  className="text-white hover:underline "
-                  aria-current="page"
-                >
-                  Home
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/my-appointment"
-                  className="text-white hover:underline"
-                  aria-current="page"
-                >
-                  My Appointment
-                </NavLink>
-              </li>
+              {
+                navLinks.map((item) => (
+                  <li key={item.title} className=" ">
+                    <NavLink
+                      to={item.link}
+                      key={item.title}
+                       className={({ isActive }) =>
+                        `text-white hover:underline
+  ${isActive ? " underline text-white" : ""}`   
+  
+                      }
+                      aria-current="page"
+                      role="link"
+                      title={item.title}
+                      aria-label={item.title} 
+                      aria-describedby={item.title}
+                      aria-pressed="false"   
+                       
+                    >
+                      {item.title}
+                    </NavLink>
+                  </li>
+                ))
+              }
+             
+              
             </ul>
           </div>
         </div>

@@ -38,7 +38,8 @@ A responsive and accessible doctor appointment booking interface built with Reac
    4. Refactor code for readability and reusability
 
    5.  Troubleshoot state and rendering issues
-
+   
+   6. generate mock data 
 
 ⚠️ **Known Limitations / Future Enhancements**
 
